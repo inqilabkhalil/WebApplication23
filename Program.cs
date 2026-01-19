@@ -18,6 +18,8 @@ namespace WebApplication23
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddScoped<IWorkerService, WorkerService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             var app = builder.Build();
 
           

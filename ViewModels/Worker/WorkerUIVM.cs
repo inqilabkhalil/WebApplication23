@@ -1,6 +1,6 @@
 ﻿using WebApplication23.Models;
 
-namespace WebApplication23.ViewModels
+namespace WebApplication23.ViewModels.Worker
 {
     public class WorkerUIVM
     {
