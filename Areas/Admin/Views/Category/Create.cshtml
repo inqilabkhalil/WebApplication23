@@ -1,0 +1,14 @@
+﻿@model CategoryCreateVM
+<form method="post" >
+
+    <div class="form-group">
+
+        <label asp-for="Work">Work</label>
+        <input asp-for="Work" type="text" class="form-control"  placeholder="Enter Work">
+        <span asp-validation-for="Work" class="text-danger"></span>
+        
+    </div>
+   
+    
+    <button type="submit" asp-action="Create" class="btn btn-primary">Submit</button>
+</form>

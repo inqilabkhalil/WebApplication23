@@ -31,12 +31,15 @@ public class CategoryService:ICategoryService
 
     public async Task CreateAsync(CategoryCreateVM model)
     {
-        var category = new Category
+        var data = new Category()
         {
             Work = model.Work
         };
-        await _context.Categories.AddAsync(category);
+      await _context.Categories.AddAsync(data);
         await _context.SaveChangesAsync();
+
+
+     
 
     }
 
@@ -45,20 +48,22 @@ public class CategoryService:ICategoryService
         var data = await _context.Categories.FindAsync(id);
         _context.Categories.Remove(data);
         await _context.SaveChangesAsync();
+       
 
     }
 
     public async Task<CategoryDetailVM> GetByIdAsync(int id)
     {
         var data = await _context.Categories.FindAsync(id);
-        return new CategoryDetailVM
+        var category = new CategoryDetailVM
         {
             Id = data.Id,
-            CreatedDate = data.CreatedAt,
-            Work = data.Work
-
+            Work = data.Work,
+            CreatedDate=data.CreatedAt
+        
         };
-
+        return category;
+       
 
     }
 
@@ -67,6 +72,7 @@ public class CategoryService:ICategoryService
         var data = await _context.Categories.FindAsync(id);
         data.Work = model.Work;
         await _context.SaveChangesAsync();
+       
 
     }
 }

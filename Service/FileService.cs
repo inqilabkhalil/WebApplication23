@@ -5,6 +5,11 @@ namespace WebApplication23.Service;
 public class FileService :IFileService
 {
     IWebHostEnvironment _env;
+    public FileService(IWebHostEnvironment env)
+    {
+        _env = env;
+        
+    }
     public string GenerateUniqueFileName(string fileName)
     {
         return Guid.NewGuid().ToString() + '_' + fileName;

@@ -13,10 +13,12 @@ namespace WebApplication23.Service
     
         private readonly AppDbContext _context;
         private readonly IFileService _fileService;
-        public WorkerService(AppDbContext context, IFileService fileService)
+
+        public WorkerService(AppDbContext context,IFileService fileService)
         {
-            
             _fileService = fileService;
+            
+            
             _context = context;
         }
         public async Task<IEnumerable<WorkerUIVM>> GetAllAsync()
@@ -36,6 +38,7 @@ namespace WebApplication23.Service
         {
             var workers = await _context.Worker.Select(item => new WorkerVM
             {
+                Id = item.Id,
                 Image = item.Image,
                 Description = item.Description,
                 CategoryName = item.Category.Work,
@@ -48,59 +51,59 @@ namespace WebApplication23.Service
         {
             var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
             var path = _fileService.GeneratePath("images", fileName);
-
-            var worker = new Worker()
+            await _fileService.UploadAsync(model.Image, path);
+            var work = new Worker()
             {
                 FullName = model.FullName,
-                Description = model.Description,
-                CategoryId = model.CategoryId,
                 Image = fileName,
+                CategoryId = model.CategoryId,
+                Description = model.Description
             };
-            _context.Worker.AddAsync(worker);
+            await _context.Worker.AddAsync(work);
             await _context.SaveChangesAsync();
-
-
-        }
-
-        public async Task UpdateAsync(int id, WorkerUpdateVM model)
-        {
-            var data = await _context.Worker.FindAsync(id);
-            var oldPath = _fileService.GeneratePath("images",data.Image);
-            var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
-            var path = _fileService.GeneratePath("images", fileName);
-            await _fileService.UploadAsync(@model.Image, oldPath);
-            
-            @data.FullName = model.FullName;
-            @data.Description = model.Description;
-            @data.Image = fileName;
-            @data.CategoryId = model.CategoryId;
-            await _context.SaveChangesAsync();
-         
+           
         }
 
         public async Task DeleteAsync(int id)
         {
-            var data = await _context.Worker.FindAsync(id);
-            _fileService.Delete(data.Image);
-            _context.Worker.Remove(data);
-            await _context.SaveChangesAsync();
             
+            var data = await _context.Worker.FindAsync(id);
+            var oldPath =  _fileService.GeneratePath("images", data.Image);
+            _fileService.Delete(oldPath);
+             _context.Worker.Remove(data);
+            await _context.SaveChangesAsync();
+
+
+        }
+
+        public async Task Update(int id, WorkerUpdateVM model)
+        {
+            var data = await _context.Worker.FindAsync(id);
+            var oldPath = _fileService.GeneratePath("images", data.Image);
+            _fileService.Delete(oldPath);
+
+            var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
+            var path = _fileService.GeneratePath("images", fileName);
+            await _fileService.UploadAsync(model.Image, path);
+            data.FullName = model.FullName;
+            data.CategoryId = model.CategoryId;
+            data.Image = fileName;
+            data.Description = model.Description;
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task<WorkerDetailVM> GetByIdAsync(int id)
         {
             var data = await _context.Worker.FindAsync(id);
-            var worker = new WorkerDetailVM()
+            return new WorkerDetailVM
             {
-                Image = data.Image,
-                Description = data.Description,
-                CategoryName = data.Category.Work,
+                Id = data.Id,
                 FullName = data.FullName,
-                CreatedDate = data.CreatedAt
+                Image = data.Image,
+                CategoryName= data.Category.Work
 
             };
-            return worker;
-
         }
     }
 }
