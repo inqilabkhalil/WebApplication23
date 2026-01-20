@@ -10,17 +10,18 @@ namespace WebApplication23.Service
 {
     public class WorkerService : IWorkerService
     {
-    
+
         private readonly AppDbContext _context;
         private readonly IFileService _fileService;
 
-        public WorkerService(AppDbContext context,IFileService fileService)
+        public WorkerService(AppDbContext context, IFileService fileService)
         {
             _fileService = fileService;
-            
-            
+
+
             _context = context;
         }
+
         public async Task<IEnumerable<WorkerUIVM>> GetAllAsync()
         {
             var workers = await _context.Worker.Select(item => new WorkerUIVM
@@ -31,10 +32,10 @@ namespace WebApplication23.Service
                 FullName = item.FullName
             }).ToListAsync();
             return workers;
-           
+
         }
 
-        public async  Task<IEnumerable<WorkerVM>> GetAllAdminAsync()
+        public async Task<IEnumerable<WorkerVM>> GetAllAdminAsync()
         {
             var workers = await _context.Worker.Select(item => new WorkerVM
             {
@@ -47,61 +48,63 @@ namespace WebApplication23.Service
             return workers;
         }
 
-        public async  Task CreateAsync(WorkerCreateVM model)
+        public async Task CreateAsync(WorkerCreateVM model)
         {
             var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
             var path = _fileService.GeneratePath("images", fileName);
             await _fileService.UploadAsync(model.Image, path);
-            var work = new Worker()
+            var data = new Worker
             {
-                FullName = model.FullName,
                 Image = fileName,
+                Description = model.Description,
+                FullName = model.FullName,
                 CategoryId = model.CategoryId,
-                Description = model.Description
             };
-            await _context.Worker.AddAsync(work);
+            await _context.Worker.AddAsync(data);
             await _context.SaveChangesAsync();
-           
+        }
+
+        public async Task UpdateAsync(int id, WorkerUpdateVM model)
+        {
+
+            var data = await _context.Worker.FindAsync(id);
+            var oldPath = _fileService.GeneratePath("images", data.Image);
+            _fileService.Delete(oldPath);
+            var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
+            var path = _fileService.GeneratePath("images", fileName);
+           await  _fileService.UploadAsync(model.Image, path);
+            data.Image = fileName;
+            data.Description = model.Description;
+            data.CategoryId = model.CategoryId;
+            data.FullName = model.FullName;
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task DeleteAsync(int id)
         {
-            
             var data = await _context.Worker.FindAsync(id);
-            var oldPath =  _fileService.GeneratePath("images", data.Image);
-            _fileService.Delete(oldPath);
-             _context.Worker.Remove(data);
-            await _context.SaveChangesAsync();
-
-
-        }
-
-        public async Task Update(int id, WorkerUpdateVM model)
-        {
-            var data = await _context.Worker.FindAsync(id);
+            if (data == null)
+            {
+                return;
+            }
             var oldPath = _fileService.GeneratePath("images", data.Image);
+            
             _fileService.Delete(oldPath);
-
-            var fileName = _fileService.GenerateUniqueFileName(model.Image.FileName);
-            var path = _fileService.GeneratePath("images", fileName);
-            await _fileService.UploadAsync(model.Image, path);
-            data.FullName = model.FullName;
-            data.CategoryId = model.CategoryId;
-            data.Image = fileName;
-            data.Description = model.Description;
-
+            _context.Worker.Remove(data);
             await _context.SaveChangesAsync();
+
         }
 
         public async Task<WorkerDetailVM> GetByIdAsync(int id)
         {
-            var data = await _context.Worker.FindAsync(id);
-            return new WorkerDetailVM
+            var data = await _context.Worker.Include(p=>p.Category).FirstOrDefaultAsync(c=>id==c.Id);
+            return new WorkerDetailVM()
             {
-                Id = data.Id,
-                FullName = data.FullName,
                 Image = data.Image,
-                CategoryName= data.Category.Work
+                Description = data.Description,
+                CategoryName = data.Category.Work,
+                FullName = data.FullName,
 
             };
         }

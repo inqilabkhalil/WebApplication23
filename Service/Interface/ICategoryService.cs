@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApplication23.ViewModels.Category;
 using WebApplication23.ViewModels.Worker;
 
@@ -6,10 +7,14 @@ namespace WebApplication23.Service.Interface;
 public interface ICategoryService
 {
     public Task<IEnumerable<CategoryVM>> GetAllAdminAsync();
-    Task CreateAsync(CategoryCreateVM model);
-    Task DeleteAsync(int id);
-    Task<CategoryDetailVM> GetByIdAsync(int id);
-    Task UpdateAsync(int Id,CategoryUpdateVM model);
+    public Task CreateAsync(CategoryCreateVM model);
+    public Task DeleteAsync(int id);
+    public Task<CategoryDetailVM> GetByIdAsync(int id);
+    public Task UpdateAsync(int id , CategoryUpdateVM model);
+    public Task <SelectList> GetAllCategories();
+    
+
+    
 
 
 }

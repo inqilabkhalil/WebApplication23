@@ -9,8 +9,10 @@ namespace WebApplication23.Service.Interface
         Task<IEnumerable<WorkerUIVM>> GetAllAsync();
         Task<IEnumerable<WorkerVM>> GetAllAdminAsync();
         Task CreateAsync(WorkerCreateVM model);
+        Task UpdateAsync(int id,WorkerUpdateVM model);
         Task DeleteAsync(int id);
-        Task Update(int id, WorkerUpdateVM model );
         Task<WorkerDetailVM> GetByIdAsync(int id);
+        
+
     }
 }

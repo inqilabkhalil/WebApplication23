@@ -21,9 +21,9 @@
             <td>
                 <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-info">Update</a>
                     <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-warning">Detail</a>
-                    <form method="post">
+                <form asp-action="Delete"  asp-route-id="@item.Id" method="post">
 
-                        <button asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">Delete</button>
+                        <button  class="btn btn-danger">Delete</button>
                      </form>
 
             </td>

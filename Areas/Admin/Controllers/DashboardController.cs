@@ -9,5 +9,6 @@ namespace WebApplication23.Areas.Admin.Controllers
         {
             return View();
         }
+        
     }
 }

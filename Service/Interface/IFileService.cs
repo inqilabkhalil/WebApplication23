@@ -2,9 +2,9 @@ namespace WebApplication23.Service.Interface;
 
 public interface IFileService
 {
-   string GenerateUniqueFileName(string fileName);
-   string GeneratePath( string folder,string fileName);
-   void Delete(string path);
-   Task UploadAsync(IFormFile file, string path);
+    void Delete(string path);
+    string GenerateUniqueFileName(string fileName);
+    string GeneratePath(string folder, string fileName);
+    Task UploadAsync(IFormFile file, string path);
 
 }

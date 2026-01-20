@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication23.Data;
 using WebApplication23.Models;
@@ -31,16 +32,12 @@ public class CategoryService:ICategoryService
 
     public async Task CreateAsync(CategoryCreateVM model)
     {
-        var data = new Category()
+        var data = new Category
         {
             Work = model.Work
         };
-      await _context.Categories.AddAsync(data);
+        await _context.Categories.AddAsync(data);
         await _context.SaveChangesAsync();
-
-
-     
-
     }
 
     public async Task DeleteAsync(int id)
@@ -48,31 +45,31 @@ public class CategoryService:ICategoryService
         var data = await _context.Categories.FindAsync(id);
         _context.Categories.Remove(data);
         await _context.SaveChangesAsync();
-       
 
     }
 
     public async Task<CategoryDetailVM> GetByIdAsync(int id)
     {
         var data = await _context.Categories.FindAsync(id);
-        var category = new CategoryDetailVM
+        return new CategoryDetailVM
         {
             Id = data.Id,
             Work = data.Work,
-            CreatedDate=data.CreatedAt
-        
+            CreatedDate = data.CreatedAt,
         };
-        return category;
-       
-
     }
 
-    public async  Task UpdateAsync(int id,CategoryUpdateVM model)
+    public async Task UpdateAsync(int id, CategoryUpdateVM model)
     {
         var data = await _context.Categories.FindAsync(id);
         data.Work = model.Work;
         await _context.SaveChangesAsync();
-       
 
+    }
+
+    public async Task<SelectList> GetAllCategories()
+    {
+        var data =  await _context.Categories.ToListAsync();
+        return new SelectList(data, "Id","Work");
     }
 }

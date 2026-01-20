@@ -7,7 +7,7 @@ public class WorkerCreateVM
     public IFormFile Image { get; set; }
   
     public string Description { get; set; }
-    public string CategoryName { get; set; }
+   
     public int CategoryId { get; set; }
     
 }
